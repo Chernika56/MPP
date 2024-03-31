@@ -8,8 +8,27 @@ namespace TracingTools.Tracing
         private readonly ConcurrentDictionary<int, List<MethodData>> _traceData = [];
         private readonly ConcurrentDictionary<int, Stack<MethodData>> _threadStack = [];
 
+        //public TraceResult GetTraceResult()
+        //    => new(_traceData.Select(kv => new ThreadData(kv.Key, $"{kv.Value.Sum(v => v.Time)}ms", kv.Value)).ToList());
+
         public TraceResult GetTraceResult()
-            => new(_traceData.Select(kv => new ThreadData(kv.Key, $"{kv.Value.Sum(v => v.Time)}ms", kv.Value)).ToList());
+        {
+            List<ThreadData> threadDataList = new List<ThreadData>();
+
+            foreach (var keyValue in _traceData)
+            {
+                long totalTime = 0;
+                foreach (var value in keyValue.Value)
+                {
+                    totalTime += value.Time;
+                }
+
+                ThreadData threadData = new ThreadData(keyValue.Key, $"{totalTime}ms", keyValue.Value);
+                threadDataList.Add(threadData);
+            }
+
+            return new TraceResult(threadDataList);
+        }
 
         public void StartTrace()
         {

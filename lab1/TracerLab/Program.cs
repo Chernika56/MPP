@@ -1,4 +1,5 @@
-﻿using TracingTools.Serializer;
+﻿using TracerLab;
+using TracingTools.Serializer;
 using TracingTools.Tracing;
 
 var tracer = new Tracer();
@@ -8,8 +9,8 @@ var firstThread = new Thread(() =>
     tracer.StartTrace();
     var thread = new Thread(() =>
     {
-        tracer.StartTrace();
-        tracer.StopTrace();
+        var _outerClass = new OuterClass(tracer);
+        _outerClass.MyMethod();
     });
     thread.Start();
     thread.Join();
